@@ -11,7 +11,18 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  db.seats.push({ id: Date.now(), ...req.body });
+  const { day, seat, client, email } = req.body;
+
+  const isTaken = db.seats.some(s => s.day === day && s.seat === seat);
+
+  if (isTaken) {
+    return res.status(409).json({
+      message: "The slot is already taken..."
+    });
+  }
+
+  db.seats.push({ id: Date.now(), day, seat, client, email });
+
   res.json({ message: 'OK' });
 });
 
