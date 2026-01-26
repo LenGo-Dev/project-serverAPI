@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../db');
+const socket = require('socket.io');
 
 const router = express.Router();
 
@@ -23,17 +24,26 @@ router.post('/', (req, res) => {
 
   db.seats.push({ id: Date.now(), day, seat, client, email });
 
+  req.io.emit('seatsUpdated', db.seats);
+
   res.json({ message: 'OK' });
+
 });
 
 router.put('/:id', (req, res) => {
   const item = db.seats.find(s => s.id == req.params.id);
   if (item) Object.assign(item, req.body);
+
+  req.io.emit('seatsUpdated', db.seats);
+
   res.json({ message: 'OK' });
 });
 
 router.delete('/:id', (req, res) => {
   db.seats = db.seats.filter(s => s.id != req.params.id);
+
+  req.io.emit('seatsUpdated', db.seats);
+
   res.json({ message: 'OK' });
 });
 
