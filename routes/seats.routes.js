@@ -1,50 +1,17 @@
 const express = require('express');
-const db = require('../db');
-const socket = require('socket.io');
-
 const router = express.Router();
 
-router.get('/', (req, res) => res.json(db.seats));
+const SeatsController = require('../controllers/seats.controller');
 
-router.get('/:id', (req, res) => {
-  const item = db.seats.find(s => s.id == req.params.id);
-  res.json(item || { message: 'Not found...' });
-});
 
-router.post('/', (req, res) => {
-  const { day, seat, client, email } = req.body;
+router.get('/', SeatsController.getAll);
 
-  const isTaken = db.seats.some(s => s.day === day && s.seat === seat);
+router.get('/:id', SeatsController.getId);
 
-  if (isTaken) {
-    return res.status(409).json({
-      message: "The slot is already taken..."
-    });
-  }
+router.post('/', SeatsController.getCreate);
 
-  db.seats.push({ id: Date.now(), day, seat, client, email });
+router.put('/:id', SeatsController.getUpdate);
 
-  req.io.emit('seatsUpdated', db.seats);
-
-  res.json({ message: 'OK' });
-
-});
-
-router.put('/:id', (req, res) => {
-  const item = db.seats.find(s => s.id == req.params.id);
-  if (item) Object.assign(item, req.body);
-
-  req.io.emit('seatsUpdated', db.seats);
-
-  res.json({ message: 'OK' });
-});
-
-router.delete('/:id', (req, res) => {
-  db.seats = db.seats.filter(s => s.id != req.params.id);
-
-  req.io.emit('seatsUpdated', db.seats);
-
-  res.json({ message: 'OK' });
-});
+router.delete('/:id', SeatsController.getDelete);
 
 module.exports = router;
