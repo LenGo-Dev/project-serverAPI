@@ -12,7 +12,9 @@ const bootstrap = async () => {
   mongoose.connection.on('open', () => console.log('MongoDB connected'));
   mongoose.connection.on('error', (err) => console.log('MongoDB connection is failed', err));
 
-  await mongoose.connect('mongodb://admin:supersecret@localhost:27017/NewWaveDB?authSource=admin');
+  // await mongoose.connect('mongodb://admin:supersecret@localhost:27017/NewWaveDB?authSource=admin');
+  await mongoose.connect('mongodb+srv://lenagotovska_db_user:EjS5U8jifZakNFIV@cluster0.hz11xl3.mongodb.net/NewWaveDB');
+
 
   const app = express();
   const server = app.listen(process.env.PORT || 8000, () => {
